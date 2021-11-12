@@ -1,4 +1,5 @@
 import React from 'react';
+import { idbPromise } from '../../utils/helpers';
 import { useStoreContext } from '../../utils/GlobalState';
 import { REMOVE_FROM_CART, UPDATE_CART_QUANTITY } from '../../utils/actions';
 
@@ -10,6 +11,8 @@ const CartItem = ({ item }) => {
           type: REMOVE_FROM_CART,
           _id: item._id
         });
+        // when item is delete in cart it will be reflected in global state and obj store
+        idbPromise('cart', 'delete', { ...item });
     };
 
     const onChange = (e) => {
@@ -20,12 +23,16 @@ const CartItem = ({ item }) => {
                 type: REMOVE_FROM_CART,
                 _id: item._id
             });
+            // affects global state and obj store when item is deleted 
+            idbPromise('cart', 'delete', {... item})
         } else {
             dispatch({
                 type: UPDATE_CART_QUANTITY,
                 _id: item._id,
                 purchaseQuantity: parseInt(value)
             });
+            // update quantity in global state and obj store
+            idbPromise('cart', 'put', { ...item, purchaseQuantity: parseInt(value) });
         }
     };
 
